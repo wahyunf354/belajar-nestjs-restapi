@@ -118,4 +118,40 @@ describe('UserController', () => {
       expect(response.body.data.token).toBeDefined();
     });
   });
+
+  describe('GET /api/users/current', () => {
+    beforeEach(async () => {
+      await testService.deleteUser();
+      await testService.createUser();
+    });
+
+    it('should be rejected if token is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/users/current')
+        .set({
+          authorization: '',
+        });
+
+      logger.info(response.body.data.message);
+
+      expect(response.status).toBe(401);
+      expect(response.body.status).toBe('error');
+      expect(response.body.data.message).toBeDefined();
+    });
+
+    it('should be success get current user', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/users/current')
+        .set({
+          authorization: 'test',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('success');
+      expect(response.body.data.name).toBe('test');
+      expect(response.body.data.username).toBe('test');
+    });
+  });
 });
