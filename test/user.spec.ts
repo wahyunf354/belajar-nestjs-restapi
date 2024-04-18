@@ -154,4 +154,74 @@ describe('UserController', () => {
       expect(response.body.data.username).toBe('test');
     });
   });
+
+  describe('PATCH /api/users/current', () => {
+    beforeEach(async () => {
+      await testService.deleteUser();
+      await testService.createUser();
+    });
+
+    it('should be rejected if request is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .patch('/api/users/current')
+        .set('authorization', 'test')
+        .send({
+          name: '',
+          password: '',
+        });
+
+      logger.info(response.body.data.message);
+
+      expect(response.status).toBe(400);
+      expect(response.body.status).toBe('error');
+      expect(response.body.data.message).toBeDefined();
+    });
+
+    it('should be able success update name', async () => {
+      const response = await request(app.getHttpServer())
+        .patch('/api/users/current')
+        .set('authorization', 'test')
+        .send({
+          name: 'test updated',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('success');
+      expect(response.body.data.name).toBe('test updated');
+      expect(response.body.data.username).toBe('test');
+    });
+
+    it('should be able success update password', async () => {
+      let response = await request(app.getHttpServer())
+        .patch('/api/users/current')
+        .set('Authorization', 'test')
+        .send({
+          password: 'updated',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('success');
+      expect(response.body.data.name).toBe('test');
+      expect(response.body.data.username).toBe('test');
+
+      response = await request(app.getHttpServer())
+        .post('/api/users/login')
+        .send({
+          username: 'test',
+          password: 'updated',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('success');
+      expect(response.body.data.name).toBe('test');
+      expect(response.body.data.username).toBe('test');
+      expect(response.body.data.token).toBeDefined();
+    });
+  });
 });
