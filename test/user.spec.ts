@@ -55,7 +55,7 @@ describe('UserController', () => {
           password: 'test',
         });
 
-      logger.info(response.body);
+      logger.info(response);
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
