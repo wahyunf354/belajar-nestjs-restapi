@@ -13,7 +13,7 @@ export class ErrorFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       response.status(exception.getStatus()).json({
-        code: 500,
+        code: exception.getStatus(),
         status: 'error',
         data: {
           message: exception.getResponse(),

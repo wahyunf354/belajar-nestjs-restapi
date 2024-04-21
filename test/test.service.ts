@@ -33,10 +33,49 @@ export class TestService {
     });
   }
 
+  async createUserContact() {
+    await this.prismaService.user.create({
+      data: {
+        username: 'test-contact',
+        name: 'test',
+        password: await bcrypt.hash('test', 10),
+        token: 'test-contact',
+      },
+    });
+  }
+
+  async deleteUserContact() {
+    await this.prismaService.user.deleteMany({
+      where: {
+        username: 'test-contact',
+      },
+    });
+  }
+
   async deleteContact() {
     await this.prismaService.contact.deleteMany({
       where: {
-        username: 'test',
+        username: 'test-contact',
+      },
+    });
+  }
+
+  async createContact() {
+    await this.prismaService.contact.create({
+      data: {
+        first_name: 'test',
+        last_name: 'test',
+        email: 'test@test.com',
+        phone: '99999999',
+        username: 'test-contact',
+      },
+    });
+  }
+
+  async getContact() {
+    return await this.prismaService.contact.findFirst({
+      where: {
+        username: 'test-contact',
       },
     });
   }
